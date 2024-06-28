@@ -1,45 +1,44 @@
-const STORAGE_KEY = "dataPengeluaran";
+const STORAGE_KEY = "dataPengeluaran"; // Mendefinisikan kunci untuk localStorage
 
 const rupiah = new Intl.NumberFormat("id", {
-  minimumFractionDigits: 0,
+  // Membuat formatter untuk format mata uang Rupiah
+  minimumFractionDigits: 0, // Mengatur jumlah digit desimal minimum menjadi 0
 });
 
 function muatDataDariStorage() {
-  const dataBerseri = localStorage.getItem(STORAGE_KEY);
-  let data = JSON.parse(dataBerseri);
+  const dataBerseri = localStorage.getItem(STORAGE_KEY); // Mengambil data pengeluaran dari localStorage
+  let data = JSON.parse(dataBerseri); // Parsing data JSON
 
   if (!data || !Array.isArray(data)) {
+    // Memeriksa apakah data ada dan apakah data adalah array
     data = []; // Atur data ke array kosong jika tidak ada atau bukan array
   }
 
-  // Render data setelah dipastikan bahwa data adalah array
-  renderData(data);
+  renderData(data); // Render data setelah dipastikan bahwa data adalah array
 
-  // Mengambil nilai total uang dari localStorage
-  const totalUang = parseFloat(localStorage.getItem("totalUang"));
+  const totalUang = parseFloat(localStorage.getItem("totalUang")); // Mengambil nilai total uang dari localStorage
 
-  // Memastikan totalUang tidak undefined atau NaN
   if (!isNaN(totalUang)) {
-    // Memperbarui tampilan total uang
-    updateTotalUangUI(totalUang);
+    // Memastikan totalUang tidak undefined atau NaN
+    updateTotalUangUI(totalUang); // Memperbarui tampilan total uang
   }
 
-  // Hitung dan tampilkan total pengeluaran semua hari
-  totalSemuaPengeluaran();
+  totalSemuaPengeluaran(); // Hitung dan tampilkan total pengeluaran semua hari
 }
 
 function renderData(data) {
-  const dataPerhari = document.getElementById("dataPerhari");
-  dataPerhari.innerHTML = "";
+  const dataPerhari = document.getElementById("dataPerhari"); // Mendapatkan elemen untuk menampilkan data per hari
+  dataPerhari.innerHTML = ""; // Mengosongkan elemen
 
   data.forEach((item) => {
-    const hari = item.hari;
-    const tanggal = item.tanggal;
-    const accordionItem = document.createElement("div");
-    accordionItem.className = "accordion-item";
-    accordionItem.id = `itemPerhari-${tanggal}`;
+    // Iterasi setiap item dalam data
+    const hari = item.hari; // Mendapatkan hari dari item
+    const tanggal = item.tanggal; // Mendapatkan tanggal dari item
+    const accordionItem = document.createElement("div"); // Membuat elemen div baru
+    accordionItem.className = "accordion-item"; // Menambahkan kelas CSS
+    accordionItem.id = `itemPerhari-${tanggal}`; // Menambahkan id untuk elemen
 
-    accordionItem.innerHTML = `
+    accordionItem.innerHTML = ` // Menambahkan konten HTML ke dalam accordionItem
       <h2 class="accordion-header">
         <button
           class="accordion-button bg-primary text-white"
@@ -102,84 +101,87 @@ function renderData(data) {
       </div>
     `;
 
-    dataPerhari.appendChild(accordionItem);
-    renderPengeluaran(item.pengeluaran, tanggal);
+    dataPerhari.appendChild(accordionItem); // Menambahkan accordionItem ke dalam dataPerhari
+    renderPengeluaran(item.pengeluaran, tanggal); // Memanggil fungsi renderPengeluaran untuk item ini
   });
 
-  // Hitung dan tampilkan total pengeluaran semua hari setelah render data
-  totalSemuaPengeluaran();
+  totalSemuaPengeluaran(); // Hitung dan tampilkan total pengeluaran semua hari setelah render data
 }
 
-// Event listener untuk tombol Tambah Total Uang
 document
-  .getElementById("buttonTotalUang")
+  .getElementById("buttonTotalUang") // Mendapatkan elemen tombol untuk menambah total uang
   .addEventListener("click", function () {
+    // Menambahkan event listener untuk klik tombol
     const totalUang = parseFloat(
       document.getElementById("inputTotalUang").value
-    );
-    updateTotalUang(totalUang);
+    ); // Mendapatkan nilai input dan mengubahnya menjadi float
+    updateTotalUang(totalUang); // Memanggil fungsi updateTotalUang dengan nilai input
   });
 
-// Event listener untuk tombol Tambah Tanggal Pengeluaran
-document.getElementById("buttonDate").addEventListener("click", function () {
-  const tanggal = document.getElementById("inputTanggal").value;
-  const hari = document.getElementById("inputHari").value;
-  tambahHariPengeluaran(tanggal, hari);
-});
+document
+  .getElementById("buttonDate") // Mendapatkan elemen tombol untuk menambah tanggal pengeluaran
+  .addEventListener("click", function () {
+    // Menambahkan event listener untuk klik tombol
+    const tanggal = document.getElementById("inputTanggal").value; // Mendapatkan nilai input tanggal
+    const hari = document.getElementById("inputHari").value; // Mendapatkan nilai input hari
+    tambahHariPengeluaran(tanggal, hari); // Memanggil fungsi tambahHariPengeluaran dengan nilai input
+  });
 
-// Event listener untuk tombol Cari
-document.getElementById("buttonCari").addEventListener("click", function () {
-  const keyword = document.getElementById("inputCariItemPerhari").value;
-  cariHariPengeluaran(keyword);
-});
+document
+  .getElementById("buttonCari") // Mendapatkan elemen tombol untuk mencari pengeluaran
+  .addEventListener("click", function () {
+    // Menambahkan event listener untuk klik tombol
+    const keyword = document.getElementById("inputCariItemPerhari").value; // Mendapatkan nilai input keyword
+    cariHariPengeluaran(keyword); // Memanggil fungsi cariHariPengeluaran dengan keyword
+  });
 
-// Fungsi untuk update total uang
 function updateTotalUang(total) {
-  localStorage.setItem("totalUang", total);
-  updateTotalUangUI(total);
+  localStorage.setItem("totalUang", total); // Menyimpan nilai total uang ke localStorage
+  updateTotalUangUI(total); // Memperbarui tampilan total uang
 }
 
-// Fungsi untuk menampilkan total uang
 function updateTotalUangUI(total) {
-  const totalUangElement = document.getElementById("totalUang");
+  const totalUangElement = document.getElementById("totalUang"); // Mendapatkan elemen untuk menampilkan total uang
   totalUangElement.textContent = `Total uang saat ini: ${rupiah.format(
     total
-  )}.000`;
+  )}.000`; // Memperbarui teks elemen dengan nilai total uang
   if (total === NaN) {
-    total = 0;
+    // Memeriksa apakah total adalah NaN
+    total = 0; // Atur total ke 0 jika NaN
   }
 }
 
-// Fungsi untuk menambah hari pengeluaran
 function tambahHariPengeluaran(tanggal, hari) {
-  const dataBerseri = localStorage.getItem(STORAGE_KEY);
+  const dataBerseri = localStorage.getItem(STORAGE_KEY); // Mengambil data pengeluaran dari localStorage
   let data = [];
 
   if (dataBerseri) {
-    data = JSON.parse(dataBerseri);
+    // Memeriksa apakah dataBerseri ada
+    data = JSON.parse(dataBerseri); // Parsing data JSON
   }
 
   const newData = {
+    // Membuat objek data baru untuk hari dan tanggal
     tanggal: tanggal,
     hari: hari,
     pengeluaran: [],
   };
 
-  data.push(newData);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  data.push(newData); // Menambahkan objek data baru ke dalam array data
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); // Menyimpan array data yang diperbarui ke localStorage
   renderData(data); // Memanggil renderData untuk menampilkan item baru
 }
 
-// Fungsi untuk merender pengeluaran ke dalam tabel informasiPengeluaran
 function renderPengeluaran(pengeluaran, tanggal) {
   const tabelPengeluaran = document.getElementById(
     `informasiPengeluaran-${tanggal}`
-  );
-  tabelPengeluaran.innerHTML = "";
+  ); // Mendapatkan elemen untuk menampilkan pengeluaran
+  tabelPengeluaran.innerHTML = ""; // Mengosongkan elemen
 
   pengeluaran.forEach((item, idx) => {
-    const newRow = document.createElement("tr");
-    newRow.innerHTML = `
+    // Iterasi setiap item dalam pengeluaran
+    const newRow = document.createElement("tr"); // Membuat elemen tr baru
+    newRow.innerHTML = ` // Menambahkan konten HTML ke dalam newRow
       <th scope="row">${idx + 1}</th>
       <td>${item.keperluan}</td>
       <td>- Rp${item.pengeluaran}.000</td>
@@ -189,188 +191,174 @@ function renderPengeluaran(pengeluaran, tanggal) {
         </button>
       </td>
     `;
-    tabelPengeluaran.appendChild(newRow);
+    tabelPengeluaran.appendChild(newRow); // Menambahkan newRow ke dalam tabelPengeluaran
   });
 
-  // Menambahkan baris untuk total pengeluaran
   if (pengeluaran.length > 0) {
+    // Memeriksa apakah ada pengeluaran
     const totalPengeluaran = pengeluaran.reduce((total, item) => {
+      // Menghitung total pengeluaran
       return total + parseFloat(item.pengeluaran.replace(/[^\d.-]/g, ""));
     }, 0);
 
-    const additionalRow = document.createElement("tr");
-    additionalRow.innerHTML = `
+    const additionalRow = document.createElement("tr"); // Membuat elemen tr baru
+    additionalRow.innerHTML = ` // Menambahkan konten HTML ke dalam additionalRow
       <td colspan="3" class="table-active text-center">Total pengeluaran hari ini</td>
       <td>- Rp${rupiah.format(totalPengeluaran)}.000</td>
     `;
-    tabelPengeluaran.appendChild(additionalRow);
+    tabelPengeluaran.appendChild(additionalRow); // Menambahkan additionalRow ke dalam tabelPengeluaran
   }
 }
 
-// Fungsi untuk menghapus pengeluaran
 function hapusPengeluaran(tanggal, index) {
-  let dataPengeluaran = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  let dataPengeluaran = JSON.parse(localStorage.getItem(STORAGE_KEY)); // Mengambil dan parsing data pengeluaran dari localStorage
   const dataIndex = dataPengeluaran.findIndex(
     (item) => item.tanggal === tanggal
-  );
+  ); // Mencari indeks item berdasarkan tanggal
 
   if (dataIndex !== -1) {
-    // Mengembalikan jumlah pengeluaran ke total uang
+    // Memeriksa apakah item ditemukan
     const pengeluaranHapus = parseFloat(
       dataPengeluaran[dataIndex].pengeluaran[index].pengeluaran.replace(
         /[^\d.-]/g,
         ""
       )
-    );
+    ); // Mendapatkan nilai pengeluaran yang akan dihapus
 
-    let totalUang = parseFloat(localStorage.getItem("totalUang"));
-    totalUang += pengeluaranHapus;
+    let totalUang = parseFloat(localStorage.getItem("totalUang")); // Mengambil nilai total uang dari localStorage
+    totalUang += pengeluaranHapus; // Menambahkan nilai pengeluaran yang dihapus ke total uang
 
-    // Menghapus pengeluaran dari array
-    dataPengeluaran[dataIndex].pengeluaran.splice(index, 1);
+    dataPengeluaran[dataIndex].pengeluaran.splice(index, 1); // Menghapus pengeluaran dari array
 
-    // Memperbarui data di localStorage
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataPengeluaran));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataPengeluaran)); // Memperbarui data di localStorage
+    renderPengeluaran(dataPengeluaran[dataIndex].pengeluaran, tanggal); // Memperbarui tampilan pengeluaran
 
-    // Memperbarui tampilan pengeluaran
-    renderPengeluaran(dataPengeluaran[dataIndex].pengeluaran, tanggal);
+    localStorage.setItem("totalUang", totalUang); // Memperbarui total uang di localStorage
+    updateTotalUangUI(totalUang); // Memperbarui tampilan total uang
 
-    // Memperbarui total uang di localStorage
-    localStorage.setItem("totalUang", totalUang);
-
-    // Memperbarui tampilan total uang
-    updateTotalUangUI(totalUang);
-
-    // Hitung dan tampilkan total pengeluaran semua hari
-    totalSemuaPengeluaran();
+    totalSemuaPengeluaran(); // Hitung dan tampilkan total pengeluaran semua hari
   }
 }
 
-// Fungsi untuk menghapus hari pengeluaran
 function hapusHari(tanggal) {
-  const itemPerhari = document.getElementById(`itemPerhari-${tanggal}`);
-  itemPerhari.remove();
+  const itemPerhari = document.getElementById(`itemPerhari-${tanggal}`); // Mendapatkan elemen hari yang akan dihapus
+  itemPerhari.remove(); // Menghapus elemen hari
 
-  let dataPengeluaran = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  let dataPengeluaran = JSON.parse(localStorage.getItem(STORAGE_KEY)); // Mengambil dan parsing data pengeluaran dari localStorage
   const newDataPengeluaran = dataPengeluaran.filter(
     (item) => item.tanggal !== tanggal
-  );
+  ); // Membuat array baru tanpa item yang dihapus
 
-  // Mengembalikan semua pengeluaran hari yang dihapus ke total uang
-  const hariDihapus = dataPengeluaran.find((item) => item.tanggal === tanggal);
+  const hariDihapus = dataPengeluaran.find((item) => item.tanggal === tanggal); // Mencari item yang dihapus
   if (hariDihapus) {
-    let totalUang = parseFloat(localStorage.getItem("totalUang"));
+    let totalUang = parseFloat(localStorage.getItem("totalUang")); // Mengambil nilai total uang dari localStorage
     hariDihapus.pengeluaran.forEach((pengeluaran) => {
+      // Menambahkan semua pengeluaran hari yang dihapus ke total uang
       totalUang += parseFloat(pengeluaran.pengeluaran.replace(/[^\d.-]/g, ""));
     });
 
-    localStorage.setItem("totalUang", totalUang);
-    updateTotalUangUI(totalUang);
+    localStorage.setItem("totalUang", totalUang); // Memperbarui total uang di localStorage
+    updateTotalUangUI(totalUang); // Memperbarui tampilan total uang
   }
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(newDataPengeluaran));
-
-  // Hitung dan tampilkan total pengeluaran semua hari
-  totalSemuaPengeluaran();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newDataPengeluaran)); // Memperbarui data di localStorage
+  totalSemuaPengeluaran(); // Hitung dan tampilkan total pengeluaran semua hari
 }
 
-// Fungsi untuk menambah pengeluaran
 function tambahPengeluaran(tanggal) {
   const inputKeperluan = document.getElementById(
     `inputKeperluan-${tanggal}`
-  ).value;
+  ).value; // Mendapatkan nilai input keperluan
   const inputPengeluaran = document.getElementById(
     `inputPengeluaran-${tanggal}`
-  ).value;
+  ).value; // Mendapatkan nilai input pengeluaran
 
-  let dataPengeluaran = JSON.parse(localStorage.getItem(STORAGE_KEY));
-  const index = dataPengeluaran.findIndex((item) => item.tanggal === tanggal);
+  let dataPengeluaran = JSON.parse(localStorage.getItem(STORAGE_KEY)); // Mengambil dan parsing data pengeluaran dari localStorage
+  const index = dataPengeluaran.findIndex((item) => item.tanggal === tanggal); // Mencari indeks item berdasarkan tanggal
 
-  // Menghitung jumlah pengeluaran yang akan ditambahkan
-  let pengeluaran = parseFloat(inputPengeluaran.replace(/[^\d.-]/g, ""));
+  let pengeluaran = parseFloat(inputPengeluaran.replace(/[^\d.-]/g, "")); /**mengonversi string yang berisi 
+  angka dalam format mata uang menjadi angka desimal yang dapat dijumlahkan. 
+  Fungsi replace(/[^\d.-]/g, "") digunakan untuk menghapus semua karakter yang 
+  bukan angka (\d), 
+  tanda minus (-), 
+  atau titik desimal (.). */
 
-  // Mengurangi total uang
-  let totalUang = parseFloat(localStorage.getItem("totalUang"));
+  let totalUang = parseFloat(localStorage.getItem("totalUang")); // Mengambil nilai total uang dari localStorage
 
-  // Memastikan total uang tidak kurang dari 0
   if (totalUang - pengeluaran < 0) {
-    alert("Total uang tidak mencukupi!");
+    // Memastikan total uang tidak kurang dari 0
+    alert("Total uang tidak mencukupi!"); // Menampilkan pesan jika total uang tidak mencukupi
     return;
   }
 
-  // Menambahkan pengeluaran ke dalam data pengeluaran
   dataPengeluaran[index].pengeluaran.push({
+    // Menambahkan pengeluaran ke dalam data pengeluaran
     keperluan: inputKeperluan,
     pengeluaran: rupiah.format(inputPengeluaran),
   });
 
-  // Mengurangi total uang sesuai pengeluaran baru
-  totalUang -= pengeluaran;
+  totalUang -= pengeluaran; // Mengurangi total uang sesuai pengeluaran baru
 
-  // Memperbarui total uang di localStorage
-  localStorage.setItem("totalUang", totalUang);
+  localStorage.setItem("totalUang", totalUang); // Memperbarui total uang di localStorage
+  updateTotalUangUI(totalUang); // Memperbarui tampilan total uang
 
-  // Memperbarui tampilan total uang
-  updateTotalUangUI(totalUang);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(dataPengeluaran)); // Menyimpan data pengeluaran yang telah diperbarui ke localStorage
+  renderPengeluaran(dataPengeluaran[index].pengeluaran, tanggal); // Memperbarui tampilan pengeluaran
 
-  // Menyimpan data pengeluaran yang telah diperbarui ke localStorage
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(dataPengeluaran));
-
-  // Memperbarui tampilan pengeluaran
-  renderPengeluaran(dataPengeluaran[index].pengeluaran, tanggal);
-
-  // Hitung dan tampilkan total pengeluaran semua hari
-  totalSemuaPengeluaran();
+  totalSemuaPengeluaran(); // Hitung dan tampilkan total pengeluaran semua hari
 }
 
-// Fungsi untuk mencari hari pengeluaran
 function cariHariPengeluaran(keyword) {
-  const dataBerseri = localStorage.getItem(STORAGE_KEY);
-  let data = JSON.parse(dataBerseri);
+  const dataBerseri = localStorage.getItem(STORAGE_KEY); // Mengambil data pengeluaran dari localStorage
+  let data = JSON.parse(dataBerseri); // Parsing data JSON
 
   if (!data || !Array.isArray(data)) {
+    // Memeriksa apakah data ada dan apakah data adalah array
     data = []; // Atur data ke array kosong jika tidak ada atau bukan array
   }
 
-  // Filter data berdasarkan keyword
   const hasilPencarian = data.filter(
+    // Filter data berdasarkan keyword
     (item) =>
       item.hari.toLowerCase().includes(keyword.toLowerCase()) ||
       item.tanggal.toLowerCase().includes(keyword.toLowerCase())
   );
 
-  // Render hasil pencarian
-  renderData(hasilPencarian);
+  renderData(hasilPencarian); // Render hasil pencarian
 }
 
-// Fungsi untuk menghitung total semua pengeluaran
 function totalSemuaPengeluaran() {
-  const dataBerseri = localStorage.getItem(STORAGE_KEY);
-  let data = JSON.parse(dataBerseri);
+  const dataBerseri = localStorage.getItem(STORAGE_KEY); // Mengambil data pengeluaran dari localStorage
+  let data = JSON.parse(dataBerseri); // Parsing data JSON
 
   if (!data || !Array.isArray(data)) {
+    // Memeriksa apakah data ada dan apakah data adalah array
     data = []; // Atur data ke array kosong jika tidak ada atau bukan array
   }
 
   let totalPengeluaran = 0;
 
   data.forEach((item) => {
+    // Iterasi setiap item dalam data
     item.pengeluaran.forEach((pengeluaran) => {
+      // Iterasi setiap pengeluaran dalam item
       totalPengeluaran += parseFloat(
-        pengeluaran.pengeluaran.replace(/[^\d.-]/g, "")
+        pengeluaran.pengeluaran.replace(/[^\d.-]/g, "") /**berarti menggantikan semua karakter yang 
+        bukan angka, titik desimal, atau tanda minus dengan string kosong, sehingga hanya menyisakan 
+        angka dan tanda desimal yang valid untuk konversi ke angka desimal. */
       );
     });
   });
 
   const totalSemuaPengeluaranElement = document.getElementById(
     "totalSemuaPengeluaran"
-  );
+  ); // Mendapatkan elemen untuk menampilkan total semua pengeluaran
   totalSemuaPengeluaranElement.textContent = `Total Pengeluaran: Rp${rupiah.format(
     totalPengeluaran
-  )}.000`;
+  )}.000`; // Memperbarui teks elemen dengan total semua pengeluaran
 }
 
-// Memuat data saat dokumen selesai dimuat
 document.addEventListener("DOMContentLoaded", function () {
-  muatDataDariStorage();
+  // Memuat data saat dokumen selesai dimuat
+  muatDataDariStorage(); // Memanggil fungsi untuk memuat data dari localStorage
 });
