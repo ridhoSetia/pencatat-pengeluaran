@@ -68,7 +68,7 @@ function renderData(data) {
               id="inputKeperluan-${tanggal}"
             />
             <input
-              type="text"
+              type="number"
               class="form-control"
               placeholder="Pengeluaran"
               aria-label="Pengeluaran"
