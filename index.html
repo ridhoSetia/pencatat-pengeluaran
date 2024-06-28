@@ -21,14 +21,17 @@
         font-family: "Open Sans", sans-serif;
         font-weight: 600;
       }
+      body {
+        overflow-y: scroll;
+      }
     </style>
   </head>
 
   <body class="bg-dark">
     <div class="container mt-3">
-      <h2 class="mb-3 text-white">Pencatat Pengeluaran</h2>
+      <h2 class="mb-3 text-white fw-bold">Pencatat Pengeluaran</h2>
       <div class="input-group mb-3">
-        <span class="input-group-text bg-primary text-white">Total Uang</span>
+        <span class="input-group-text bg-primary text-white fw-semibold">Total Uang</span>
         <input
           type="text"
           class="form-control"
@@ -37,7 +40,7 @@
           id="inputTotalUang"
         />
         <button
-          class="btn btn-outline-primary text-white"
+          class="fw-semibold btn btn-outline-primary text-white"
           type="button"
           id="buttonTotalUang"
         >
@@ -46,7 +49,7 @@
       </div>
 
       <div class="input-group mb-3">
-        <span class="input-group-text bg-primary text-white">Tanggal</span>
+        <span class="input-group-text bg-primary text-white fw-semibold">Tanggal</span>
         <input
           type="date"
           class="form-control"
@@ -62,7 +65,7 @@
           id="inputHari"
         />
         <button
-          class="btn btn-outline-primary text-white"
+          class="fw-semibold btn btn-outline-primary text-white"
           type="button"
           id="buttonDate"
         >
@@ -71,7 +74,7 @@
       </div>
 
       <div class="input-group mb-3 mt-5">
-        <span class="input-group-text bg-primary text-white">Cari Hari</span>
+        <span class="input-group-text bg-primary text-white fw-semibold">Cari Hari</span>
         <input
           type="text"
           class="form-control"
@@ -80,7 +83,7 @@
           id="inputCariItemPerhari"
         />
         <button
-          class="btn btn-outline-primary text-white"
+          class="fw-semibold btn btn-outline-primary text-white"
           type="button"
           id="buttonCari"
         >
@@ -95,7 +98,14 @@
         Total uang saat ini: Rp
       </div>
 
-      <div class="accordion" id="dataPerhari"></div>
+      <div class="accordion mt-3" id="dataPerhari"></div>
+
+      <div
+        class="bg-danger bg-opacity-10 border border-danger rounded p-3 mt-5 text-white"
+        id="totalSemuaPengeluaran"
+      >
+        Total Pengeluaran: Rp
+      </div>
     </div>
 
     <script

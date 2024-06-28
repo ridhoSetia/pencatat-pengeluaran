@@ -23,6 +23,9 @@ function muatDataDariStorage() {
     // Memperbarui tampilan total uang
     updateTotalUangUI(totalUang);
   }
+
+  // Hitung dan tampilkan total pengeluaran semua hari
+  totalSemuaPengeluaran();
 }
 
 function renderData(data) {
@@ -33,7 +36,7 @@ function renderData(data) {
     const hari = item.hari;
     const tanggal = item.tanggal;
     const accordionItem = document.createElement("div");
-    accordionItem.className = "accordion-item mt-3";
+    accordionItem.className = "accordion-item";
     accordionItem.id = `itemPerhari-${tanggal}`;
 
     accordionItem.innerHTML = `
@@ -102,6 +105,9 @@ function renderData(data) {
     dataPerhari.appendChild(accordionItem);
     renderPengeluaran(item.pengeluaran, tanggal);
   });
+
+  // Hitung dan tampilkan total pengeluaran semua hari setelah render data
+  totalSemuaPengeluaran();
 }
 
 // Event listener untuk tombol Tambah Total Uang
@@ -140,7 +146,7 @@ function updateTotalUangUI(total) {
     total
   )}.000`;
   if (total === NaN) {
-    total = o;
+    total = 0;
   }
 }
 
@@ -234,6 +240,9 @@ function hapusPengeluaran(tanggal, index) {
 
     // Memperbarui tampilan total uang
     updateTotalUangUI(totalUang);
+
+    // Hitung dan tampilkan total pengeluaran semua hari
+    totalSemuaPengeluaran();
   }
 }
 
@@ -260,6 +269,9 @@ function hapusHari(tanggal) {
   }
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(newDataPengeluaran));
+
+  // Hitung dan tampilkan total pengeluaran semua hari
+  totalSemuaPengeluaran();
 }
 
 // Fungsi untuk menambah pengeluaran
@@ -306,6 +318,9 @@ function tambahPengeluaran(tanggal) {
 
   // Memperbarui tampilan pengeluaran
   renderPengeluaran(dataPengeluaran[index].pengeluaran, tanggal);
+
+  // Hitung dan tampilkan total pengeluaran semua hari
+  totalSemuaPengeluaran();
 }
 
 // Fungsi untuk mencari hari pengeluaran
@@ -326,6 +341,33 @@ function cariHariPengeluaran(keyword) {
 
   // Render hasil pencarian
   renderData(hasilPencarian);
+}
+
+// Fungsi untuk menghitung total semua pengeluaran
+function totalSemuaPengeluaran() {
+  const dataBerseri = localStorage.getItem(STORAGE_KEY);
+  let data = JSON.parse(dataBerseri);
+
+  if (!data || !Array.isArray(data)) {
+    data = []; // Atur data ke array kosong jika tidak ada atau bukan array
+  }
+
+  let totalPengeluaran = 0;
+
+  data.forEach((item) => {
+    item.pengeluaran.forEach((pengeluaran) => {
+      totalPengeluaran += parseFloat(
+        pengeluaran.pengeluaran.replace(/[^\d.-]/g, "")
+      );
+    });
+  });
+
+  const totalSemuaPengeluaranElement = document.getElementById(
+    "totalSemuaPengeluaran"
+  );
+  totalSemuaPengeluaranElement.textContent = `Total Pengeluaran: Rp${rupiah.format(
+    totalPengeluaran
+  )}.000`;
 }
 
 // Memuat data saat dokumen selesai dimuat
