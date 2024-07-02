@@ -405,35 +405,52 @@ function totalSemuaPengeluaran() {
   )}.000`; // Memperbarui teks elemen dengan total semua pengeluaran
 }
 
-const inputTanggal = document.querySelector("#inputTanggal");
-const inputHari = document.querySelector("#inputHari");
-const buttonDate = document.querySelector("#buttonDate");
-
-function checkInputTanggal() {
-  if ((inputTanggal.value !== "" || 0) && (inputHari.value !== "" || 0)) {
-    buttonDate.disabled = false;
-  } else {
-    buttonDate.disabled = true;
-  }
-}
-
 const inputTotalUang = document.querySelector("#inputTotalUang");
-const buttonTotalUang = document.querySelector("#buttonTotalUang");
+const inputHrTgl = document.querySelectorAll(".inputHrTgl");
 
-function checkInputTotalUang() {
-  if (inputTotalUang.value !== "" || 0) {
-    buttonTotalUang.disabled = false;
+function cekInput(elementInput1, elementInput2, elementButton) {
+  if (
+    (document.querySelector(elementInput1).value !== "" || 0) &&
+    (document.querySelector(elementInput2).value !== "" || 0)
+  ) {
+    document.querySelector(elementButton).disabled = false;
   } else {
-    buttonTotalUang.disabled = true;
+    document.querySelector(elementButton).disabled = true;
   }
 }
-
-inputTotalUang.addEventListener("input", checkInputTotalUang);
-
-inputTanggal.addEventListener("input", checkInputTanggal);
-inputHari.addEventListener("input", checkInputTanggal);
+inputHrTgl.forEach((input) => {
+  input.addEventListener("input", () =>
+    cekInput("#inputTanggal", "#inputHari", "#buttonDate")
+  );
+});
+inputTotalUang.addEventListener("input", () =>
+  cekInput("#inputTotalUang", "#inputTotalUang", "#buttonTotalUang")
+);
 
 document.addEventListener("DOMContentLoaded", function () {
   // Memuat data saat dokumen selesai dimuat
   muatDataDariStorage(); // Memanggil fungsi untuk memuat data dari localStorage
+
+  const quoteText = document.getElementById("quote");
+  const authorText = document.getElementById("author");
+  const newQuoteButton = document.getElementById("new-quote");
+
+  const getQuote = async () => {
+    try {
+      const response = await fetch("https://api.quotable.io/random");
+      const data = await response.json();
+      quoteText.textContent = data.content;
+      authorText.textContent = `~ ${data.author} ~`;
+    } catch (error) {
+      quoteText.textContent =
+        "An error occurred while fetching the quote. Please try again later.";
+      authorText.textContent = "";
+      console.error(error);
+    }
+  };
+
+  newQuoteButton.addEventListener("click", getQuote);
+
+  // Load a quote when the page loads
+  getQuote();
 });
