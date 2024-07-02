@@ -38,7 +38,8 @@ function renderData(data) {
     accordionItem.className = "accordion-item"; // Menambahkan kelas CSS
     accordionItem.id = `itemPerhari-${tanggal}`; // Menambahkan id untuk elemen
 
-    accordionItem.innerHTML = ` // Menambahkan konten HTML ke dalam accordionItem
+    // Menambahkan konten HTML ke dalam accordionItem
+    accordionItem.innerHTML = `
       <h2 class="accordion-header">
         <button
           class="accordion-button bg-primary text-white"
@@ -74,18 +75,18 @@ function renderData(data) {
               id="inputPengeluaran-${tanggal}"
             />
             <button
-              class="btn btn-primary text-white"
+              class="btn btn-primary text-white fw-bold"
               type="button"
               onclick="tambahPengeluaran('${tanggal}')"
             >
-              Update
+              +
             </button>
           </div>
 
           <table class="table mt-3 table-light">
             <thead>
               <tr>
-                <th scope="col">#</th>
+                <th scope="col">No</th>
                 <th scope="col">Keperluan</th>
                 <th scope="col">Pengeluaran</th>
                 <th scope="col">Aksi</th>
@@ -96,13 +97,39 @@ function renderData(data) {
             </tbody>
           </table>
 
-          <button class="btn btn-danger" onclick="hapusHari('${tanggal}')">Hapus Hari</button>
+          <button type="button" class="btn btn-danger modal-alert-hapus" data-bs-toggle="modal" data-bs-target="#alertHapusModal" data-idHari="${tanggal}">
+            Hapus Hari
+          </button>
         </div>
       </div>
     `;
 
     dataPerhari.appendChild(accordionItem); // Menambahkan accordionItem ke dalam dataPerhari
     renderPengeluaran(item.pengeluaran, tanggal); // Memanggil fungsi renderPengeluaran untuk item ini
+  });
+  // Event listener modal untuk tombol hapus hari
+  document.querySelectorAll(".modal-alert-hapus").forEach((button) => {
+    button.addEventListener("click", () => {
+      const tanggal = button.getAttribute("data-idHari");
+      document.getElementById("tanggalHapus").textContent = tanggal;
+      document.querySelector(".modal-footer").innerHTML = `
+            <button
+              type="button"
+              class="btn btn-warning text-white"
+              data-bs-dismiss="modal"
+            >
+              Tidak
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              onclick="hapusHari('${tanggal}')"
+              data-bs-dismiss="modal"
+            >
+              Hapus
+            </button>
+            `;
+    });
   });
 
   totalSemuaPengeluaran(); // Hitung dan tampilkan total pengeluaran semua hari setelah render data
@@ -115,6 +142,7 @@ document
     const totalUang = parseFloat(
       document.getElementById("inputTotalUang").value
     ); // Mendapatkan nilai input dan mengubahnya menjadi float
+    
     updateTotalUang(totalUang); // Memanggil fungsi updateTotalUang dengan nilai input
   });
 
@@ -181,10 +209,12 @@ function renderPengeluaran(pengeluaran, tanggal) {
   pengeluaran.forEach((item, idx) => {
     // Iterasi setiap item dalam pengeluaran
     const newRow = document.createElement("tr"); // Membuat elemen tr baru
-    newRow.innerHTML = ` // Menambahkan konten HTML ke dalam newRow
+
+    // Menambahkan konten HTML ke dalam newRow
+    newRow.innerHTML = `
       <th scope="row">${idx + 1}</th>
       <td>${item.keperluan}</td>
-      <td>- Rp${item.pengeluaran}.000</td>
+      <td>Rp${item.pengeluaran}.000</td>
       <td>
         <button type="button" class="btn btn-danger btn-sm" onclick="hapusPengeluaran('${tanggal}', ${idx})">
           Hapus
@@ -202,9 +232,11 @@ function renderPengeluaran(pengeluaran, tanggal) {
     }, 0);
 
     const additionalRow = document.createElement("tr"); // Membuat elemen tr baru
-    additionalRow.innerHTML = ` // Menambahkan konten HTML ke dalam additionalRow
+
+    // Menambahkan konten HTML ke dalam additionalRow
+    additionalRow.innerHTML = `
       <td colspan="3" class="table-active text-center">Total pengeluaran hari ini</td>
-      <td>- Rp${rupiah.format(totalPengeluaran)}.000</td>
+      <td class="table-active">- Rp${rupiah.format(totalPengeluaran)}.000</td>
     `;
     tabelPengeluaran.appendChild(additionalRow); // Menambahkan additionalRow ke dalam tabelPengeluaran
   }
@@ -276,7 +308,9 @@ function tambahPengeluaran(tanggal) {
   let dataPengeluaran = JSON.parse(localStorage.getItem(STORAGE_KEY)); // Mengambil dan parsing data pengeluaran dari localStorage
   const index = dataPengeluaran.findIndex((item) => item.tanggal === tanggal); // Mencari indeks item berdasarkan tanggal
 
-  let pengeluaran = parseFloat(inputPengeluaran.replace(/[^\d.-]/g, "")); /**mengonversi string yang berisi 
+  let pengeluaran = parseFloat(
+    inputPengeluaran.replace(/[^\d.-]/g, "")
+  ); /**mengonversi string yang berisi 
   angka dalam format mata uang menjadi angka desimal yang dapat dijumlahkan. 
   Fungsi replace(/[^\d.-]/g, "") digunakan untuk menghapus semua karakter yang 
   bukan angka (\d), 
@@ -343,7 +377,10 @@ function totalSemuaPengeluaran() {
     item.pengeluaran.forEach((pengeluaran) => {
       // Iterasi setiap pengeluaran dalam item
       totalPengeluaran += parseFloat(
-        pengeluaran.pengeluaran.replace(/[^\d.-]/g, "") /**berarti menggantikan semua karakter yang 
+        pengeluaran.pengeluaran.replace(
+          /[^\d.-]/g,
+          ""
+        ) /**berarti menggantikan semua karakter yang 
         bukan angka, titik desimal, atau tanda minus dengan string kosong, sehingga hanya menyisakan 
         angka dan tanda desimal yang valid untuk konversi ke angka desimal. */
       );
@@ -357,6 +394,34 @@ function totalSemuaPengeluaran() {
     totalPengeluaran
   )}.000`; // Memperbarui teks elemen dengan total semua pengeluaran
 }
+
+const inputTanggal = document.querySelector("#inputTanggal");
+const inputHari = document.querySelector("#inputHari");
+const buttonDate = document.querySelector("#buttonDate");
+
+function checkInputTanggal() {
+  if ((inputTanggal.value !== "" || 0) && (inputHari.value !== "" || 0)) {
+    buttonDate.disabled = false;
+  } else {
+    buttonDate.disabled = true;
+  }
+}
+
+const inputTotalUang = document.querySelector("#inputTotalUang");
+const buttonTotalUang = document.querySelector("#buttonTotalUang");
+
+function checkInputTotalUang() {
+  if ((inputTotalUang.value !== "" || 0)) {
+    buttonTotalUang.disabled = false;
+  } else {
+    buttonTotalUang.disabled = true;
+  }
+}
+
+inputTotalUang.addEventListener("input", checkInputTotalUang);
+
+inputTanggal.addEventListener("input", checkInputTanggal);
+inputHari.addEventListener("input", checkInputTanggal);
 
 document.addEventListener("DOMContentLoaded", function () {
   // Memuat data saat dokumen selesai dimuat

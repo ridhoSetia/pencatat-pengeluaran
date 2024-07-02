@@ -15,10 +15,8 @@
       crossorigin="anonymous"
     />
     <style>
-      body,
       input,
       button {
-        font-family: "Open Sans", sans-serif;
         font-weight: 600;
       }
       body {
@@ -27,29 +25,63 @@
     </style>
   </head>
 
-  <body class="bg-dark">
+  <body class="bg-light">
     <div class="container mt-3">
-      <h2 class="mb-3 text-white fw-bold">Pencatat Pengeluaran</h2>
+      <div
+        class="modal"
+        id="alertHapusModal"
+        tabindex="-1"
+        aria-labelledby="alertHapusModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <p class="fs-5">
+                Anda yakin ingin menghapus data pengeluaran uang di hari <b id="tanggalHapus"></b>?
+              </p>
+            </div>
+            <div class="modal-footer">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="mb-3 text-primary-emphasis fw-bold">Pencatat Pengeluaran</h2>
       <div class="input-group mb-3">
-        <span class="input-group-text bg-primary text-white fw-semibold">Total Uang</span>
+        <span class="input-group-text bg-primary text-white fw-semibold"
+          >Total Uang</span
+        >
         <input
           type="number"
           class="form-control"
           placeholder="Total Uang yang Dimiliki"
           aria-label="Total Uang yang Dimiliki"
           id="inputTotalUang"
+          required
         />
         <button
-          class="fw-semibold btn btn-outline-primary text-white"
-          type="button"
+          class="fw-semibold btn btn-primary text-white"
+          type="submit"
           id="buttonTotalUang"
+          disabled
         >
           Tambah
         </button>
       </div>
 
       <div class="input-group mb-3">
-        <span class="input-group-text bg-primary text-white fw-semibold">Tanggal</span>
+        <span class="input-group-text bg-primary text-white fw-semibold"
+          >Tanggal</span
+        >
         <input
           type="date"
           class="form-control"
@@ -65,16 +97,19 @@
           id="inputHari"
         />
         <button
-          class="fw-semibold btn btn-outline-primary text-white"
+          class="fw-semibold btn btn-primary text-white"
           type="button"
           id="buttonDate"
+          disabled
         >
           Tambah
         </button>
       </div>
 
       <div class="input-group mb-3 mt-5">
-        <span class="input-group-text bg-primary text-white fw-semibold">Cari Hari</span>
+        <span class="input-group-text bg-primary text-white fw-semibold"
+          >Cari Hari</span
+        >
         <input
           type="text"
           class="form-control"
@@ -83,7 +118,7 @@
           id="inputCariItemPerhari"
         />
         <button
-          class="fw-semibold btn btn-outline-primary text-white"
+          class="fw-semibold btn btn-primary text-white"
           type="button"
           id="buttonCari"
         >
@@ -92,7 +127,7 @@
       </div>
 
       <div
-        class="bg-primary bg-opacity-10 border border-primary rounded p-3 mb-2 text-white"
+        class="p-3 text-primary-emphasis bg-primary-subtle border border-primary rounded-3"
         id="totalUang"
       >
         Total uang saat ini: Rp
@@ -101,7 +136,7 @@
       <div class="accordion mt-3" id="dataPerhari"></div>
 
       <div
-        class="bg-danger bg-opacity-10 border border-danger rounded p-3 mt-5 text-white"
+        class="bg-danger-subtle border border-danger rounded p-3 mt-5 mb-5 text-danger-emphasis"
         id="totalSemuaPengeluaran"
       >
         Total Pengeluaran: Rp
