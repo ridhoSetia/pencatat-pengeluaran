@@ -30,6 +30,14 @@ function renderData(data) {
   const dataPerhari = document.getElementById("dataPerhari"); // Mendapatkan elemen untuk menampilkan data per hari
   dataPerhari.innerHTML = ""; // Mengosongkan elemen
 
+  // Ubah format tanggal menjadi timestamp untuk pengurutan
+  data.forEach((item) => {
+    item.timestamp = new Date(item.tanggal).getTime();
+  });
+
+  // Urutkan data berdasarkan timestamp dari terbaru ke terlama
+  data.sort((a, b) => b.timestamp - a.timestamp);
+
   data.forEach((item) => {
     // Iterasi setiap item dalam data
     const hari = item.hari; // Mendapatkan hari dari item
@@ -58,8 +66,8 @@ function renderData(data) {
         class="accordion-collapse collapse"
         data-bs-parent="#dataPerhari"
       >
-        <div class="accordion-body">
-          <div class="input-group mb-3">
+        <div class="accordion-body p-2">
+          <div class="input-group mt-2">
             <input
               type="text"
               class="form-control"
@@ -70,23 +78,24 @@ function renderData(data) {
             <input
               type="number"
               class="form-control"
-              placeholder="Pengeluaran"
+              placeholder="Pengeluaran Rp"
               aria-label="Pengeluaran"
               id="inputPengeluaran-${tanggal}"
             />
             <button
-              class="btn btn-primary text-white fw-bold"
-              type="button"
+              class="btn btn-primary text-white"
+              type="submit"
               onclick="tambahPengeluaran('${tanggal}')"
             >
-              +
+            <i class="fa-solid fa-plus"></i>
             </button>
           </div>
 
-          <table class="table mt-3 table-light">
+          <div class="table-responsive">
+          <table class="table mt-3 table-bordered">
             <thead>
               <tr>
-                <th scope="col">No</th>
+                <th scope="col" class="col-no">No</th>
                 <th scope="col">Keperluan</th>
                 <th scope="col">Pengeluaran</th>
                 <th scope="col">Aksi</th>
@@ -96,6 +105,7 @@ function renderData(data) {
               <!-- Rows akan ditambahkan secara dinamis di sini -->
             </tbody>
           </table>
+          </div>
 
           <button type="button" class="btn btn-danger modal-alert-hapus" data-bs-toggle="modal" data-bs-target="#alertHapusModal" data-idHari="${tanggal}">
             Hapus Hari
@@ -142,7 +152,7 @@ document
     const totalUang = parseFloat(
       document.getElementById("inputTotalUang").value
     ); // Mendapatkan nilai input dan mengubahnya menjadi float
-    
+
     updateTotalUang(totalUang); // Memanggil fungsi updateTotalUang dengan nilai input
   });
 
@@ -170,7 +180,7 @@ function updateTotalUang(total) {
 
 function updateTotalUangUI(total) {
   const totalUangElement = document.getElementById("totalUang"); // Mendapatkan elemen untuk menampilkan total uang
-  totalUangElement.textContent = `Total uang saat ini: ${rupiah.format(
+  totalUangElement.textContent = `Total uang saat ini: Rp${rupiah.format(
     total
   )}.000`; // Memperbarui teks elemen dengan nilai total uang
   if (total === NaN) {
@@ -236,7 +246,7 @@ function renderPengeluaran(pengeluaran, tanggal) {
     // Menambahkan konten HTML ke dalam additionalRow
     additionalRow.innerHTML = `
       <td colspan="3" class="table-active text-center">Total pengeluaran hari ini</td>
-      <td class="table-active">- Rp${rupiah.format(totalPengeluaran)}.000</td>
+      <td class="table-active">Rp${rupiah.format(totalPengeluaran)}.000</td>
     `;
     tabelPengeluaran.appendChild(additionalRow); // Menambahkan additionalRow ke dalam tabelPengeluaran
   }
@@ -411,7 +421,7 @@ const inputTotalUang = document.querySelector("#inputTotalUang");
 const buttonTotalUang = document.querySelector("#buttonTotalUang");
 
 function checkInputTotalUang() {
-  if ((inputTotalUang.value !== "" || 0)) {
+  if (inputTotalUang.value !== "" || 0) {
     buttonTotalUang.disabled = false;
   } else {
     buttonTotalUang.disabled = true;
